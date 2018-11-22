@@ -39,22 +39,28 @@ func (game *Game) toDisk(path string) {
 // CreateGame Given a string of game data, construct and return a Game struct
 func CreateGame(gameData string) Game {
 	game := Game{}
-	records := strings.Split(gameData, "\n")
+	allRecords := strings.Split(gameData, "\r\n")
+	idSource := make([]string, 0)
+	infoSource := make([]string, 0)
 
-	for _, record := range records {
-		// @NOTE I wonder how reliable this is. Surely there has to be a comma embedded somewhere in quotes in a field or something
-		fields := strings.Split(record, ",")
+	for _, record := range allRecords {
+		recordType := strings.Split(record, ",")[0]
 
-		// a good record will have at least two fields, one for the type, the rest being the comma-delimited data
-		if len(fields) >= 2 {
-			recordType := fields[0]
+		if recordType == "id" {
+			idSource = append(idSource, record)
+		}
 
-			// this is an "id" record (we chopped this off earlier)
-			if recordType == "" {
-				game.ID = fields[1]
-			}
+		if recordType == "info" {
+			infoSource = append(infoSource, record)
 		}
 	}
+
+	idRecords := GetRecords(idSource)
+	infoRecords := CreateInfoRecords(infoSource)
+
+	game.ID = idRecords[0][1]
+
+	fmt.Println(infoRecords)
 
 	return game
 }

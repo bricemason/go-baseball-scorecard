@@ -14,5 +14,6 @@
 # output data directory
 data/out/*
 
-# scratch playground
+# stuff for me
 scratch.go
+todos
