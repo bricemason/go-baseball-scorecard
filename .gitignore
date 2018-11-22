@@ -13,3 +13,6 @@
 
 # output data directory
 data/out/*
+
+# scratch playground
+scratch.go

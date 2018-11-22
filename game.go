@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"strconv"
 	"strings"
 )
 
@@ -52,17 +51,7 @@ func CreateGame(gameData string) Game {
 
 			// this is an "id" record (we chopped this off earlier)
 			if recordType == "" {
-				recordData := fields[1]
-				gameType, _ := strconv.Atoi(recordData[11:12])
-
-				game.ID = recordData[:12]
-				game.Team = Teams[recordData[:3]]
-				game.Date = fmt.Sprintf("%s/%s/%s", recordData[3:7], recordData[7:9], recordData[9:11])
-				game.GameType = GameTypes[gameType]
-			}
-
-			if recordType == "info" {
-				fmt.Println("info", fields)
+				game.ID = fields[1]
 			}
 		}
 	}
