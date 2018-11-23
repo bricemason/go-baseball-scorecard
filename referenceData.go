@@ -15,6 +15,20 @@ type Park struct {
 	State string `json:"state"`
 }
 
+// League An MLB league
+type League struct {
+	ID   string `json:"id"`
+	Code string `json:"code"`
+	Name string `json:"name"`
+}
+
+// Team An MLB team
+type Team struct {
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	League League `json:"league"`
+}
+
 // Person Can be a player, coach, or ump
 type Person struct {
 	ID        string `json:"id"`
@@ -34,6 +48,19 @@ var Leagues = map[string]League{
 		Code: "NL",
 		Name: "National League",
 	},
+}
+
+// WindDirections translates windir code to friendly display value
+var WindDirections = map[string]string{
+	"fromcf": "From Center Field",
+	"fromlf": "From Left Field",
+	"fromrf": "From Right Field",
+	"ltor": "Left to Right",
+	"rtol": "Right to Left",
+	"tocf": "To Center Field",
+	"tolf": "To Left Field",
+	"torf": "To Right Field",
+	"unknown": "Unknown",
 }
 
 // Teams Reference data representing all MLB teams

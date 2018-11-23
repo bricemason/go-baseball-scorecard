@@ -15,5 +15,5 @@
 data/out/*
 
 # stuff for me
-scratch.go
+scratch/*
 todos

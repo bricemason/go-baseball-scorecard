@@ -29,6 +29,5 @@ func main() {
 
 		// dump to disk as well
 		game.toDisk(outputPath)
-
 	}
 }
