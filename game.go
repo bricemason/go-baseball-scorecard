@@ -9,8 +9,9 @@ import (
 
 // Game The top-level data structure to contain all game data
 type Game struct {
-	ID   string `json:"id"`
-	Info Info   `json:"info"`
+	ID     string `json:"id"`
+	Info   Info   `json:"info"`
+	Lineup Lineup `json:"lineup"`
 }
 
 // Game.toJSON() Converts a Game struct to a json string
@@ -39,27 +40,30 @@ func CreateGame(gameData string) Game {
 	allRecords := strings.Split(gameData, "\r\n")
 	idSource := make([]string, 0)
 	infoSource := make([]string, 0)
+	startSource := make([]string, 0)
 
 	for _, record := range allRecords {
 		recordType := strings.Split(record, ",")[0]
 
-		if recordType == "id" {
+		switch recordType {
+		case "id":
 			idSource = append(idSource, record)
-		}
-
-		if recordType == "info" {
+		case "info":
 			infoSource = append(infoSource, record)
+		case "start":
+			startSource = append(startSource, record)
 		}
 	}
 
 	idRecords := GetRecords(idSource)
+	info := CreateInfo(infoSource)
+	lineup := CreateLineup(GetRecords(startSource), info.Usedh)
 
 	game := Game{
-		ID:   idRecords[0][1],
-		Info: CreateInfo(infoSource),
+		ID:     idRecords[0][1],
+		Info:   info,
+		Lineup: lineup,
 	}
-
-	fmt.Println(game)
 
 	return game
 }
