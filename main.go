@@ -20,14 +20,19 @@ func main() {
 	// note that we start by chopping off the id at the beginning of the event file, but we'll put it back together when processing
 	gamesData := strings.Split(string(eventData[2:]), "\nid")
 
-	for _, gameData := range gamesData {
-		// make the first "id" record whole again
-		game := CreateGame("id" + gameData)
+	// @NOTE for now, let's just process plays from the first game
+	game := CreateGame("id" + gamesData[1])
+	game.toDisk(outputPath)
 
-		// dump to terminal to check data as we go
-		fmt.Println(game.toJSON())
+	// @TODO eventually process all games again. For now let's just work on processing plays from the first game
+	// for _, gameData := range gamesData {
+	// 	// make the first "id" record whole again
+	// 	game := CreateGame("id" + gameData)
 
-		// dump to disk as well
-		game.toDisk(outputPath)
-	}
+	// 	// dump to terminal to check data as we go
+	// 	fmt.Println(game.toJSON())
+
+	// 	// dump to disk as well
+	// 	game.toDisk(outputPath)
+	// }
 }

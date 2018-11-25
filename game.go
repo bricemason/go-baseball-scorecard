@@ -41,6 +41,7 @@ func CreateGame(gameData string) Game {
 	idSource := make([]string, 0)
 	infoSource := make([]string, 0)
 	startSource := make([]string, 0)
+	playSource := make([]string, 0)
 
 	for _, record := range allRecords {
 		recordType := strings.Split(record, ",")[0]
@@ -52,6 +53,8 @@ func CreateGame(gameData string) Game {
 			infoSource = append(infoSource, record)
 		case "start":
 			startSource = append(startSource, record)
+		case "play":
+			playSource = append(playSource, record)
 		}
 	}
 
