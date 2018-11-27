@@ -62,6 +62,9 @@ func CreateGame(gameData string) Game {
 	info := CreateInfo(infoSource)
 	lineup := CreateLineup(GetRecords(startSource), info.Usedh)
 
+	// @TODO this is temporary, used for analysis and testing ground for handling plays/runner advancements
+	processPlays(playSource)
+
 	game := Game{
 		ID:     idRecords[0][1],
 		Info:   info,
