@@ -6,8 +6,29 @@ import (
 	"strings"
 )
 
-var playMatchers = map[string]string{
-	"^(\\d)(\\d)$": "ground out from %s to %s",
+// PlayMatchConfig provides for a callback
+type PlayMatchConfig struct {
+	shortDescription string
+	longDescription  string
+}
+
+var playMatchers = map[*regexp.Regexp]PlayMatchConfig{
+	regexp.MustCompile("^K$"): PlayMatchConfig{
+		shortDescription: "K",
+		longDescription:  "strike out",
+	},
+	regexp.MustCompile("^(\\d)$"): PlayMatchConfig{
+		shortDescription: "F%s",
+		longDescription:  "fly ball caught by %s",
+	},
+	regexp.MustCompile("^(\\d)(\\d)$"): PlayMatchConfig{
+		shortDescription: "%s-%s",
+		longDescription:  "ground out %s-%s",
+	},
+}
+
+func test() {
+	fmt.Println("testing")
 }
 
 func processPlays(plays []string) {
@@ -25,14 +46,13 @@ func processPlays(plays []string) {
 		fmt.Println("modifiers:", modifiers)
 
 		// run the basic plays through the matcher
-		for k, v := range playMatchers {
-			r := regexp.MustCompile(k)
-			result := r.FindStringSubmatch(playPieces[0])
+		for r, v := range playMatchers {
+			playResult := r.FindStringSubmatch(playPieces[0])
 
-			if len(result) > 0 {
-				// @TODO we want to use the results slice to feed into Sprintf but we need []interface{} to spread into that
-				// we'll probably need a simple util to run that conversion per the golang faqs
-				fmt.Println("FOUND results on play", playPieces[0], "with", v)
+			if len(playResult) > 0 {
+				args := ToInterface(playResult[1:])
+				fmt.Println(fmt.Sprintf(v.shortDescription, args...))
+				fmt.Println(fmt.Sprintf(v.longDescription, args...))
 			}
 		}
 

@@ -6,7 +6,7 @@ import (
 
 // FieldingPosition represents a player position in a game
 type FieldingPosition struct {
-	ID   int    `json:"id"`
+	ID   string `json:"id"`
 	Code string `json:"code"`
 	Name string `json:"name"`
 }
@@ -40,12 +40,11 @@ func CreateLineup(startRecords [][]string, useDH bool) Lineup {
 
 	for i, entry := range startRecords {
 		battingPosition, _ := strconv.Atoi(entry[4])
-		fieldingPosition, _ := strconv.Atoi(entry[5])
 		player := Player{
 			ID:               entry[1],
 			Name:             entry[2],
 			BattingPosition:  battingPosition,
-			FieldingPosition: FieldingPositions[fieldingPosition],
+			FieldingPosition: FieldingPositions[entry[5]],
 		}
 
 		if i <= splitPos {

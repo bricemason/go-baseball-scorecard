@@ -17,3 +17,13 @@ func GetRecords(source []string) [][]string {
 
 	return records
 }
+
+// ToInterface takes a slice of strings and returns them as a slice of interface{} to make them spreadable as args to sprintf
+func ToInterface(s []string) []interface{} {
+	list := make([]interface{}, len(s))
+	for i, v := range s {
+		list[i] = v
+	}
+
+	return list
+}

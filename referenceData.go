@@ -64,19 +64,19 @@ var WindDirections = map[string]string{
 }
 
 // FieldingPositions represents all possible positions a player can take in a game
-var FieldingPositions = map[int]FieldingPosition{
-	1: FieldingPosition{ID: 1, Code: "P", Name: "Pitcher"},
-	2: FieldingPosition{ID: 2, Code: "C", Name: "Catcher"},
-	3: FieldingPosition{ID: 3, Code: "1B", Name: "First Base"},
-	4: FieldingPosition{ID: 4, Code: "2B", Name: "Second Base"},
-	5: FieldingPosition{ID: 5, Code: "3B", Name: "Third Base"},
-	6: FieldingPosition{ID: 6, Code: "SS", Name: "Shortstop"},
-	7: FieldingPosition{ID: 7, Code: "LF", Name: "Left Field"},
-	8: FieldingPosition{ID: 8, Code: "CF", Name: "Center Field"},
-	9: FieldingPosition{ID: 9, Code: "RF", Name: "Right Field"},
-	10: FieldingPosition{ID: 10, Code: "DH", Name: "Designated Hitter"},
-	11: FieldingPosition{ID: 11, Code: "PH", Name: "Pinch Hitter"},
-	12: FieldingPosition{ID: 12, Code: "PR", Name: "Pinch Runner"},
+var FieldingPositions = map[string]FieldingPosition{
+	"1": FieldingPosition{ID: "1", Code: "P", Name: "Pitcher"},
+	"2": FieldingPosition{ID: "2", Code: "C", Name: "Catcher"},
+	"3": FieldingPosition{ID: "3", Code: "1B", Name: "First Base"},
+	"4": FieldingPosition{ID: "4", Code: "2B", Name: "Second Base"},
+	"5": FieldingPosition{ID: "5", Code: "3B", Name: "Third Base"},
+	"6": FieldingPosition{ID: "6", Code: "SS", Name: "Shortstop"},
+	"7": FieldingPosition{ID: "7", Code: "LF", Name: "Left Field"},
+	"8": FieldingPosition{ID: "8", Code: "CF", Name: "Center Field"},
+	"9": FieldingPosition{ID: "9", Code: "RF", Name: "Right Field"},
+	"10": FieldingPosition{ID: "10", Code: "DH", Name: "Designated Hitter"},
+	"11": FieldingPosition{ID: "11", Code: "PH", Name: "Pinch Hitter"},
+	"12": FieldingPosition{ID: "12", Code: "PR", Name: "Pinch Runner"},
 }
 
 // PlayModifiers represents all possible modifiers for a given play
