@@ -19,8 +19,15 @@ var baseMap = map[string]string{
 	"H": "home",
 }
 
+/*
+	Records with no docs:
+		6(1)
+*/
+
 var playMatchers = map[*regexp.Regexp]PlayMatchConfig{
-	regexp.MustCompile("^K$"): PlayMatchConfig{
+	// I've seen some records with "K23" so we're keeping this matcher loose and just looking for a "K" at the beginning
+	// I'm assuming the "23" in this case would be a ball in the dirt and a throw to first by the catcher for the out
+	regexp.MustCompile("^K"): PlayMatchConfig{
 		shortDescription: "K",
 		longDescription: func(matches []string) string {
 			return "strike out"
@@ -56,10 +63,54 @@ var playMatchers = map[*regexp.Regexp]PlayMatchConfig{
 			return fmt.Sprintf("stole %s", baseMap[matches[0]])
 		},
 	},
-	regexp.MustCompile("^S$"): PlayMatchConfig{
-		shortDescription: "S",
+	regexp.MustCompile("^S(\\d)?$"): PlayMatchConfig{
+		shortDescription: "S%s",
 		longDescription: func(matches []string) string {
+			if matches[0] != "" {
+				return fmt.Sprintf("single to %s", FieldingPositions[matches[0]].Code)
+			}
+
 			return "single"
+		},
+	},
+	regexp.MustCompile("^D(\\d)?$"): PlayMatchConfig{
+		shortDescription: "D%s",
+		longDescription: func(matches []string) string {
+			if matches[0] != "" {
+				return fmt.Sprintf("double to %s", FieldingPositions[matches[0]].Code)
+			}
+
+			return "double"
+		},
+	},
+	regexp.MustCompile("^T(\\d)?$"): PlayMatchConfig{
+		shortDescription: "T%s",
+		longDescription: func(matches []string) string {
+			if matches[0] != "" {
+				return fmt.Sprintf("triple to %s", FieldingPositions[matches[0]].Code)
+			}
+
+			return "triple"
+		},
+	},
+	regexp.MustCompile("^FC(\\d)?$"): PlayMatchConfig{
+		shortDescription: "FC%s",
+		longDescription: func(matches []string) string {
+			if matches[0] != "" {
+				return fmt.Sprintf("fielder's choice to %s", FieldingPositions[matches[0]].Code)
+			}
+
+			return "fielder's choice"
+		},
+	},
+	regexp.MustCompile("^E(\\d)?$"): PlayMatchConfig{
+		shortDescription: "E%s",
+		longDescription: func(matches []string) string {
+			if matches[0] != "" {
+				return fmt.Sprintf("error by %s", FieldingPositions[matches[0]].Code)
+			}
+
+			return "error"
 		},
 	},
 	regexp.MustCompile("^W$"): PlayMatchConfig{
@@ -78,6 +129,14 @@ var playMatchers = map[*regexp.Regexp]PlayMatchConfig{
 		shortDescription: "IW",
 		longDescription: func(matches []string) string {
 			return "intentional walk"
+		},
+	},
+	// The two caught stealing situations below have fielding scenarios after them  to note where the throw was from and to whom
+	// but I'm not interested in logging that
+	regexp.MustCompile("^CS(2|3|H)"): PlayMatchConfig{
+		shortDescription: "CS%s",
+		longDescription: func(matches []string) string {
+			return fmt.Sprintf("caught stealing %s", baseMap[matches[0]])
 		},
 	},
 	regexp.MustCompile("^POCS(2|3|H)"): PlayMatchConfig{
@@ -132,6 +191,8 @@ func processPlays(plays []string) {
 		fmt.Println("basic:", basicPlay)
 		fmt.Println("modifiers:", modifiers)
 
+		hasPlayConfig := false
+
 		// run the basic plays through the matcher
 		for r, v := range playMatchers {
 			playResult := r.FindStringSubmatch(basicPlay)
@@ -140,8 +201,13 @@ func processPlays(plays []string) {
 				args := ToInterface(playResult[1:])
 				fmt.Println(fmt.Sprintf(v.shortDescription, args...))
 				fmt.Println(v.longDescription(playResult[1:]))
-				continue
+				hasPlayConfig = true
+				break
 			}
+		}
+
+		if hasPlayConfig == false {
+			panic(fmt.Sprintf("no play config found for %s", basicPlay))
 		}
 
 		if len(playPieces) == 2 {
