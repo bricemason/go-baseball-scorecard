@@ -22,6 +22,7 @@ var baseMap = map[string]string{
 /*
 	Records with no docs:
 		6(1)
+		143
 */
 
 var playMatchers = map[*regexp.Regexp]PlayMatchConfig{
@@ -33,10 +34,14 @@ var playMatchers = map[*regexp.Regexp]PlayMatchConfig{
 			return "strike out"
 		},
 	},
-	regexp.MustCompile("^(\\d)$"): PlayMatchConfig{
-		shortDescription: "F%s",
+	// this is weird but going with it for now
+	// originally the single number was going to represent a fly ball out but this can and is usually accompanied by
+	// modifiers that can have it be things like an unassisted ground out or even the seemingly undocumented play of 6(1)
+	// we may just end up having to pass in the modifiers here too
+	regexp.MustCompile("^(\\d)(?:\\(\\d\\))?$"): PlayMatchConfig{
+		shortDescription: "O%s",
 		longDescription: func(matches []string) string {
-			return fmt.Sprintf("fly ball caught by %s", FieldingPositions[matches[0]].Code)
+			return fmt.Sprintf("out %s", FieldingPositions[matches[0]].Code)
 		},
 	},
 	regexp.MustCompile("^(\\d)(\\d)$"): PlayMatchConfig{
@@ -61,6 +66,12 @@ var playMatchers = map[*regexp.Regexp]PlayMatchConfig{
 		shortDescription: "SB%s",
 		longDescription: func(matches []string) string {
 			return fmt.Sprintf("stole %s", baseMap[matches[0]])
+		},
+	},
+	regexp.MustCompile("^SB(2|3|H);SB(2|3|H)$"): PlayMatchConfig{
+		shortDescription: "DSB %s,%s",
+		longDescription: func(matches []string) string {
+			return fmt.Sprintf("double steal %s, %s", baseMap[matches[0]], baseMap[matches[1]])
 		},
 	},
 	regexp.MustCompile("^S(\\d)?$"): PlayMatchConfig{
@@ -145,10 +156,40 @@ var playMatchers = map[*regexp.Regexp]PlayMatchConfig{
 			return fmt.Sprintf("picked off at %s (caught stealing)", baseMap[matches[0]])
 		},
 	},
+	regexp.MustCompile("^PO(1|2|3)\\(\\d\\d\\)"): PlayMatchConfig{
+		shortDescription: "PO%s",
+		longDescription: func(matches []string) string {
+			return fmt.Sprintf("picked off at %s", baseMap[matches[0]])
+		},
+	},
+	regexp.MustCompile("^PO(1|2|3)\\(E(\\d)\\)"): PlayMatchConfig{
+		shortDescription: "PO%s-E%s",
+		longDescription: func(matches []string) string {
+			return fmt.Sprintf("pick off attempt at %s, error by %s", baseMap[matches[0]], FieldingPositions[matches[1]].Code)
+		},
+	},
 	regexp.MustCompile("^(\\d)(\\d)\\((\\d)\\)$"): PlayMatchConfig{
 		shortDescription: "DP%s%s(%s)",
 		longDescription: func(matches []string) string {
 			return "supposedly some sort of double play"
+		},
+	},
+	regexp.MustCompile("^(\\d)(\\d)(\\d)$"): PlayMatchConfig{
+		shortDescription: "DP-%s%s%s",
+		longDescription: func(matches []string) string {
+			return fmt.Sprintf("double play? %s-%s-%s", FieldingPositions[matches[0]].Code, FieldingPositions[matches[1]].Code, FieldingPositions[matches[2]].Code)
+		},
+	},
+	regexp.MustCompile("^(\\d)\\(B\\)(\\d)\\((\\d)\\)$"): PlayMatchConfig{
+		shortDescription: "LDP-%s-%s(%s)",
+		longDescription: func(matches []string) string {
+			return fmt.Sprintf("lined into double play %s to %s at %s", FieldingPositions[matches[0]].Code, FieldingPositions[matches[1]].Code, baseMap[matches[2]])
+		},
+	},
+	regexp.MustCompile("^(\\d)\\(\\d\\)(\\d)$"): PlayMatchConfig{
+		shortDescription: "UGDP-%s-%s",
+		longDescription: func(matches []string) string {
+			return fmt.Sprintf("ground ball double play, unassisted %s to %s", FieldingPositions[matches[0]].Code, FieldingPositions[matches[1]].Code)
 		},
 	},
 	regexp.MustCompile("^(\\d)(\\d)\\((\\d)\\)(\\d)$"): PlayMatchConfig{
@@ -169,10 +210,18 @@ var playMatchers = map[*regexp.Regexp]PlayMatchConfig{
 			return "home run"
 		},
 	},
-}
-
-func test() {
-	fmt.Println("testing")
+	regexp.MustCompile("^BK$"): PlayMatchConfig{
+		shortDescription: "BK",
+		longDescription: func(matches []string) string {
+			return "balk"
+		},
+	},
+	regexp.MustCompile("^FLE(\\d)$"): PlayMatchConfig{
+		shortDescription: "FLE%s",
+		longDescription: func(matches []string) string {
+			return fmt.Sprintf("error by %s on foul fly ball", FieldingPositions[matches[0]].Code)
+		},
+	},
 }
 
 func processPlays(plays []string) {
@@ -188,6 +237,7 @@ func processPlays(plays []string) {
 		basicPlay := basicPlayPieces[0]
 		modifiers := basicPlayPieces[1:]
 
+		fmt.Println("full:", playString)
 		fmt.Println("basic:", basicPlay)
 		fmt.Println("modifiers:", modifiers)
 
