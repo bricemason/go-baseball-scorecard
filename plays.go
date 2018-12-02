@@ -23,6 +23,7 @@ var baseMap = map[string]string{
 	Records with no docs:
 		6(1)
 		143
+		366(1)
 */
 
 var playMatchers = map[*regexp.Regexp]PlayMatchConfig{
@@ -220,6 +221,25 @@ var playMatchers = map[*regexp.Regexp]PlayMatchConfig{
 		shortDescription: "FLE%s",
 		longDescription: func(matches []string) string {
 			return fmt.Sprintf("error by %s on foul fly ball", FieldingPositions[matches[0]].Code)
+		},
+	},
+	regexp.MustCompile("^C$"): PlayMatchConfig{
+		shortDescription: "C",
+		longDescription: func(matches []string) string {
+			return "interference"
+		},
+	},
+	regexp.MustCompile("^OA$"): PlayMatchConfig{
+		shortDescription: "A",
+		longDescription: func(matches []string) string {
+			return "base runner advance"
+		},
+	},
+	// @TODO research all these matches below further
+	regexp.MustCompile("^366\\(1\\)$"): PlayMatchConfig{
+		shortDescription: "366(1)",
+		longDescription: func(matches []string) string {
+			return "UNKNOWN"
 		},
 	},
 }
