@@ -63,6 +63,14 @@ var WindDirections = map[string]string{
 	"unknown": "Unknown",
 }
 
+// Bases all the bases on the diamond
+var Bases = map[string]string{
+	"1": "first",
+	"2": "second",
+	"3": "third",
+	"H": "home",
+}
+
 // FieldingPositions represents all possible positions a player can take in a game
 var FieldingPositions = map[string]FieldingPosition{
 	"1": FieldingPosition{ID: "1", Code: "P", Name: "Pitcher"},
