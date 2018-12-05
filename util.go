@@ -27,3 +27,14 @@ func ToInterface(s []string) []interface{} {
 
 	return list
 }
+
+// Contains will check if a string value is contained within a slice of strings
+func Contains(values []string, value string) bool {
+	for _, v := range values {
+		if v == value {
+			return true
+		}
+	}
+
+	return false
+}
