@@ -83,9 +83,11 @@ var playMatchers = map[*regexp.Regexp]PlayCreator{
 			if len(playConfig.modifiers) > 0 {
 				// modifiers for this play: G FL P L F BP SH F1 BG
 				// modifiers groups for this play: G FL P L F BP,FL SH BP F1 BG FL,P
-
+				playConfig.code = position
 			}
 		}
+
+		playConfig.description = fmt.Sprintf("%s %s", playConfig.description, TranslateModifiers(playConfig.modifiers))
 
 		return playConfig
 	},

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/csv"
+	"fmt"
 	"strings"
 )
 
@@ -37,4 +38,18 @@ func Contains(values []string, value string) bool {
 	}
 
 	return false
+}
+
+// TranslateModifiers takes in a slice of modifier codes and returns the descriptions as a comma-delimited list ready for printing
+func TranslateModifiers(modifiers []string) string {
+	if len(modifiers) > 0 {
+		modifierDescriptions := make([]string, 0)
+
+		for _, modifier := range modifiers {
+			modifierDescriptions = append(modifierDescriptions, PlayModifiers[modifier])
+		}
+		return fmt.Sprintf("(%s)", strings.Join(modifierDescriptions, ","))
+	}
+
+	return ""
 }
