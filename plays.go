@@ -65,7 +65,7 @@ func createPlayConfig(playSource string) PlayConfig {
 		366(1)
 */
 
-var modifiers = make([]string, 0)
+var uniqueValues = make([]string, 0)
 
 var playMatchers = map[*regexp.Regexp]PlayCreator{
 	regexp.MustCompile("^K$"): func(playConfig PlayConfig, matches []string) PlayConfig {
@@ -74,6 +74,11 @@ var playMatchers = map[*regexp.Regexp]PlayCreator{
 
 		return playConfig
 	},
+	/*
+		basic plays for this group: 3 2 4 6 5 1
+		modifiers for this play: G FL P L F BP SH F1 BG
+		modifiers groups for this play: G FL P L F BP,FL SH BP F1 BG FL,P
+	*/
 	regexp.MustCompile("^(\\d)$"): func(playConfig PlayConfig, matches []string) PlayConfig {
 		switch position := matches[0]; position {
 		case "7", "8", "9":
@@ -81,8 +86,6 @@ var playMatchers = map[*regexp.Regexp]PlayCreator{
 			playConfig.description = fmt.Sprintf("fly ball out %s", FieldingPositions[position].Code)
 		default:
 			if len(playConfig.modifiers) > 0 {
-				// modifiers for this play: G FL P L F BP SH F1 BG
-				// modifiers groups for this play: G FL P L F BP,FL SH BP F1 BG FL,P
 				playConfig.code = position
 			}
 		}
@@ -91,12 +94,15 @@ var playMatchers = map[*regexp.Regexp]PlayCreator{
 
 		return playConfig
 	},
-	// 	// regexp.MustCompile("^(\\d)(\\d)$"): PlayMatchConfig{
-	// 	// 	shortDescription: "%s-%s",
-	// 	// 	longDescription: func(matches []string) string {
-	// 	// 		return fmt.Sprintf("ground ball %s to %s", FieldingPositions[matches[0]].Code, FieldingPositions[matches[1]].Code)
-	// 	// 	},
-	// 	// },
+	/*
+		basic plays for this group: 41 43 53 13 63 31 23 34 14 24 54
+	*/
+	regexp.MustCompile("^(\\d)(\\d)$"): func(playConfig PlayConfig, matches []string) PlayConfig {
+		playConfig.code = fmt.Sprintf("%s-%s", matches[0], matches[1])
+		playConfig.description = fmt.Sprintf("ground ball %s to %s", FieldingPositions[matches[0]].Code, FieldingPositions[matches[1]].Code)
+
+		return playConfig
+	},
 	// 	// regexp.MustCompile("^NP$"): PlayMatchConfig{
 	// 	// 	shortDescription: "NP",
 	// 	// 	longDescription: func(matches []string) string {
@@ -313,5 +319,5 @@ func processPlays(plays []string) {
 		fmt.Println("-----")
 	}
 
-	fmt.Println("MODIFIERS", modifiers)
+	fmt.Println("unique values:", uniqueValues)
 }
