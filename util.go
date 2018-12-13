@@ -53,3 +53,12 @@ func TranslateModifiers(modifiers []string) string {
 
 	return ""
 }
+
+// AppendUnique will add an item to a slice of strings if it does not exist
+func AppendUnique(list []string, value string) []string {
+	if !Contains(list, value) {
+		list = append(list, value)
+	}
+
+	return list
+}

@@ -65,19 +65,24 @@ func createPlayConfig(playSource string) PlayConfig {
 		366(1)
 */
 
-var uniqueValues = make([]string, 0)
+var u = make([]string, 0)
 
+/*
+	basic plays: K
+	modifiers: C BINT DP BF
+	modifier groups: C BINT,DP BF
+*/
 var playMatchers = map[*regexp.Regexp]PlayCreator{
 	regexp.MustCompile("^K$"): func(playConfig PlayConfig, matches []string) PlayConfig {
 		playConfig.code = "K"
-		playConfig.description = "strike out"
+		playConfig.description = fmt.Sprintf("%s %s", "strike out", TranslateModifiers(playConfig.modifiers))
 
 		return playConfig
 	},
 	/*
-		basic plays for this group: 3 2 4 6 5 1
-		modifiers for this play: G FL P L F BP SH F1 BG
-		modifiers groups for this play: G FL P L F BP,FL SH BP F1 BG FL,P
+		basic plays: 3 2 4 6 5 1
+		modifiers: G FL P L F BP SH F1 BG
+		modifiers groups: G FL P L F BP,FL SH BP F1 BG FL,P
 	*/
 	regexp.MustCompile("^(\\d)$"): func(playConfig PlayConfig, matches []string) PlayConfig {
 		switch position := matches[0]; position {
@@ -95,7 +100,9 @@ var playMatchers = map[*regexp.Regexp]PlayCreator{
 		return playConfig
 	},
 	/*
-		basic plays for this group: 41 43 53 13 63 31 23 34 14 24 54
+		basic plays: 41 43 53 13 63 31 23 34 14 24 54
+		modifiers: SH BG DP G
+		modifier groups: SH BG DP G SH,BG
 	*/
 	regexp.MustCompile("^(\\d)(\\d)$"): func(playConfig PlayConfig, matches []string) PlayConfig {
 		playConfig.code = fmt.Sprintf("%s-%s", matches[0], matches[1])
@@ -103,24 +110,42 @@ var playMatchers = map[*regexp.Regexp]PlayCreator{
 
 		return playConfig
 	},
-	// 	// regexp.MustCompile("^NP$"): PlayMatchConfig{
-	// 	// 	shortDescription: "NP",
-	// 	// 	longDescription: func(matches []string) string {
-	// 	// 		return "no play"
-	// 	// 	},
-	// 	// },
-	// 	// regexp.MustCompile("^WP$"): PlayMatchConfig{
-	// 	// 	shortDescription: "WP",
-	// 	// 	longDescription: func(matches []string) string {
-	// 	// 		return "wild pitch"
-	// 	// 	},
-	// 	// },
-	// 	// regexp.MustCompile("^SB(2|3|H)$"): PlayMatchConfig{
-	// 	// 	shortDescription: "SB%s",
-	// 	// 	longDescription: func(matches []string) string {
-	// 	// 		return fmt.Sprintf("stole %s", baseMap[matches[0]])
-	// 	// 	},
-	// 	// },
+	/*
+		basic plays: NP
+		modifiers: n/a
+		modifier groups: n/a
+	*/
+	regexp.MustCompile("^NP$"): func(playConfig PlayConfig, matches []string) PlayConfig {
+		playConfig.code = "NP"
+		playConfig.description = "no play"
+
+		return playConfig
+	},
+	/*
+		basic plays: WP
+		modifiers: n/a
+		modifier groups: n/a
+	*/
+	regexp.MustCompile("^WP$"): func(playConfig PlayConfig, matches []string) PlayConfig {
+		playConfig.code = "WP"
+		playConfig.description = "wild pitch"
+
+		return playConfig
+	},
+	/*
+		basic plays:
+		modifiers:
+		modifier groups:
+		@TODO are there any double or triple steals here? SB2;SB3 etc
+	*/
+	// regexp.MustCompile("^SB(2|3|H)$"): func(playConfig PlayConfig, matches []string) PlayConfig {
+	// 	playConfig.code = "SB<addBaseHere>"
+	// 	playConfig.description = "stole <addBaseHere>"
+
+	// 	u = AppendUnique(u, playConfig.basicPlay)
+
+	// 	return playConfig
+	// },
 	// 	// regexp.MustCompile("^SB(2|3|H);SB(2|3|H)$"): PlayMatchConfig{
 	// 	// 	shortDescription: "DSB %s,%s",
 	// 	// 	longDescription: func(matches []string) string {
@@ -319,5 +344,5 @@ func processPlays(plays []string) {
 		fmt.Println("-----")
 	}
 
-	fmt.Println("unique values:", uniqueValues)
+	fmt.Println("unique values:", u)
 }
