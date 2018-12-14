@@ -62,3 +62,16 @@ func AppendUnique(list []string, value string) []string {
 
 	return list
 }
+
+// Clean takes in a slice of strings and filters out empty values
+func Clean(list []string) []string {
+	l := make([]string, 0)
+
+	for _, v := range list {
+		if v != "" {
+			l = append(l, v)
+		}
+	}
+
+	return l
+}

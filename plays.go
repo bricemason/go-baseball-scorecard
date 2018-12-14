@@ -133,35 +133,44 @@ var playMatchers = map[*regexp.Regexp]PlayCreator{
 		return playConfig
 	},
 	/*
-		basic plays:
-		modifiers:
-		modifier groups:
-		@TODO are there any double or triple steals here? SB2;SB3 etc
+		basic plays: SB2 SB3 SB3;SB2
+		modifiers: n/a
+		modifier groups: n/a
 	*/
-	// regexp.MustCompile("^SB(2|3|H)$"): func(playConfig PlayConfig, matches []string) PlayConfig {
-	// 	playConfig.code = "SB<addBaseHere>"
-	// 	playConfig.description = "stole <addBaseHere>"
+	regexp.MustCompile("^SB(2|3|H);?(?:SB(2|3|H))?;?(?:SB(2|3|H))?$"): func(playConfig PlayConfig, matches []string) PlayConfig {
+		matches = Clean(matches)
 
-	// 	u = AppendUnique(u, playConfig.basicPlay)
+		if len(matches) > 1 {
+			bases := make([]string, 0)
+			for _, v := range matches {
+				bases = append(bases, Bases[v])
+			}
 
-	// 	return playConfig
-	// },
-	// 	// regexp.MustCompile("^SB(2|3|H);SB(2|3|H)$"): PlayMatchConfig{
-	// 	// 	shortDescription: "DSB %s,%s",
-	// 	// 	longDescription: func(matches []string) string {
-	// 	// 		return fmt.Sprintf("double steal %s, %s", baseMap[matches[0]], baseMap[matches[1]])
-	// 	// 	},
-	// 	// },
-	// 	// regexp.MustCompile("^S(\\d)?$"): PlayMatchConfig{
-	// 	// 	shortDescription: "S%s",
-	// 	// 	longDescription: func(matches []string) string {
-	// 	// 		if matches[0] != "" {
-	// 	// 			return fmt.Sprintf("single to %s", FieldingPositions[matches[0]].Code)
-	// 	// 		}
+			playConfig.code = fmt.Sprintf("SB(%s)", strings.Join(matches, ","))
+			playConfig.description = fmt.Sprintf("stole %s", strings.Join(bases, ", "))
+		} else {
+			playConfig.code = fmt.Sprintf("SB%s", matches[0])
+			playConfig.description = fmt.Sprintf("stole %s", Bases[matches[0]])
+		}
 
-	// 	// 		return "single"
-	// 	// 	},
-	// 	// },
+		return playConfig
+	},
+	/*
+		basic plays: S6 S8 S7 S1 S4 S5 S S9 S3 S2
+		modifiers: G6S G4M L56 F8S G4S L78 BG 15 L G BG5 L3 F7S F89 L7S BG4S F9S L1 F78S L9S L8S G34 G1 F89S F9L G5 G1S L7L L4 L34 G56 4S L4M G13 G15 G6 L6 L9L G4 56 L5 5 34 9 G3 8 78 89 L7 7 1 4M F7 F78 L89S P8S P89 P7S L89 L78S L9 L9LS 13 F8 F9 FL 6S L8
+		modifier groups: G6S G4M L56 F8S G4S L78 BG,15  L G BG5 L3 F7S F89 L7S BG4S F9S L1 F78S L9S L8S G34 G1 F89S F9L G5 G1S L7L L4 L34 G56 BG,4S L4M G13 G15 G6 L6 L9L G4 BG 56 L5 BG,5 34 9 G3 8 78 89 L7 7 1 4M F7 F78 L89S P8S P89 P7S L89 L78S L9 L9LS BG,13 F8 F9 FL,5 BG,6S L8
+	*/
+	regexp.MustCompile("^S(\\d)?$"): func(playConfig PlayConfig, matches []string) PlayConfig {
+		if matches[0] == "" {
+			playConfig.code = "S"
+			playConfig.description = "single"
+		} else {
+			playConfig.code = fmt.Sprintf("S%s", matches[0])
+			playConfig.description = fmt.Sprintf("single to %s", FieldingPositions[matches[0]].Code)
+		}
+
+		return playConfig
+	},
 	// 	// regexp.MustCompile("^D(\\d)?$"): PlayMatchConfig{
 	// 	// 	shortDescription: "D%s",
 	// 	// 	longDescription: func(matches []string) string {
